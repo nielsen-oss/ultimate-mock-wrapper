@@ -1,0 +1,15 @@
+build
+dist
+ultimate_mock_wrapper.egg-info
+.idea
+.pypirc
+tests/__pycache__/
+__pycache__/
+*.py[cod]
+*$py.class
+src/*.py[cod]
+src/*$py.class
+tests/*.py[cod]
+tests/*$py.class
+*.so
+.dmypy.json

@@ -1,0 +1,26 @@
+name: On Pull Request
+
+on:
+  pull_request
+
+jobs:
+  on_pull_request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r requirements/test.txt
+      - name: install self
+        run: pwd & python3 -m pip install .
+      - name: Unittests With Pytest
+        run: |
+          pytest -m unittest --suppress-no-test-exit-code -vvv --cache-clear
+      - name: Integration Tests With Ptest
+        run: |
+          pytest -m integrationtest --suppress-no-test-exit-code --cache-clear
