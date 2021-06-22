@@ -1,8 +1,5 @@
 name: CI
 
-branding:
-  icon: 'check'
-  color: 'green'
 
 on:
   push:
