@@ -31,7 +31,8 @@ class CacheableType(type):
         cls.__next_id = instance.id + 1
         if hasattr(instance, 'name'):
             cls.__all_instances_by_name.setdefault(instance.name, instance)
-        cls.__all_instances_by_mock.setdefault(instance.mock, instance)
+        if hasattr(instance, 'mock'):
+            cls.__all_instances_by_mock.setdefault(instance.mock, instance)
 
     def all_instances(cls) -> List[MockWrapper]:
         return list(cls.__all_instances_by_mock.values())
@@ -50,12 +51,12 @@ class CacheableType(type):
             cls.__all_instances_by_id[new_id] = cls.__all_instances_by_id.pop(old_id)
 
     def is_id_exist(cls, id_: Union[int, str]):
-        return id_ not in cls.__all_instances_by_id
+        return id_ in cls.__all_instances_by_id
 
     def get_next_id(cls):
         return cls.__next_id
 
-    def __init__(cls, *args, **kwargs):
+    def __init__(cls, *args, **kwargs) -> object:
         CacheableType.__created_classes.append(cls)
         super(CacheableType, cls).__init__(*args, **kwargs)
         cls.__all_instances_by_id = {}
