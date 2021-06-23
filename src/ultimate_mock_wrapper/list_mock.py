@@ -1,10 +1,10 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, List, Union, Iterable, Callable, Any
+from typing import TYPE_CHECKING, Any, Callable, Iterable, List, Union
 from unittest.mock import MagicMock, Mock
 
 if TYPE_CHECKING:
-    from .cacheable_meta_type import CacheableType
     from .base_wrapper import MockWrapper
+    from .cacheable_meta_type import CacheableType
 
 OnWriteCallback = Callable[[str, Any], None]
 
@@ -18,11 +18,19 @@ class ListMockIterator:
 
 
 class ListMock(list):
-    def __init__(self, *, real_list: List[MockWrapper], items_type: CacheableType, on_write_callback: OnWriteCallback = None) -> None:
+    def __init__(
+        self,
+        *,
+        real_list: List[MockWrapper],
+        items_type: CacheableType,
+        on_write_callback: OnWriteCallback = None
+    ) -> None:
         self.real_list = real_list
         self.items_type = items_type
         self.mock = MagicMock()
-        self.on_write_callback = on_write_callback if on_write_callback else lambda *x, **y: None
+        self.on_write_callback = (
+            on_write_callback if on_write_callback else lambda *x, **y: None
+        )
         self.setup_mock()
 
     def setup_mock(self):
@@ -49,7 +57,9 @@ class ListMock(list):
         self.mock.clear = clear_side_effect
 
         def extend_side_effect(__iterable: Iterable[Mock]) -> None:
-            self.real_list.extend(map(lambda m: self.items_type.get_by_mock(m), __iterable))
+            self.real_list.extend(
+                map(lambda m: self.items_type.get_by_mock(m), __iterable)
+            )
             self.on_write_callback("extend", __iterable)
 
         self.mock.extend = extend_side_effect
@@ -96,7 +106,9 @@ class ListMock(list):
         self.mock.__delitem__ = __delitem___side_effect
 
         def __add___side_effect(self, x: List[Mock]) -> List[Mock]:
-            self.real_list.__add__(list(map(lambda mock: self.items_type.get_by_mock(mock), x)))
+            self.real_list.__add__(
+                list(map(lambda mock: self.items_type.get_by_mock(mock), x))
+            )
             self.on_write_callback("__add__", x)
             return self
 

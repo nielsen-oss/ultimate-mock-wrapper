@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, Union
 from unittest.mock import PropertyMock
+
 if TYPE_CHECKING:
     from unittest.mock import Mock
 

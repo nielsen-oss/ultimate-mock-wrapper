@@ -25,13 +25,13 @@ class CacheableType(type):
         cls.__all_instances_by_mock.clear()
 
     def add_instance(cls, instance: MockWrapper):
-        if not (hasattr(instance, 'id') and isinstance(instance.id, int)):
+        if not (hasattr(instance, "id") and isinstance(instance.id, int)):
             instance.id = cls.get_next_id()
         cls.__all_instances_by_id.setdefault(instance.id, instance)
         cls.__next_id = instance.id + 1
-        if hasattr(instance, 'name'):
+        if hasattr(instance, "name"):
             cls.__all_instances_by_name.setdefault(instance.name, instance)
-        if hasattr(instance, 'mock'):
+        if hasattr(instance, "mock"):
             cls.__all_instances_by_mock.setdefault(instance.mock, instance)
 
     def all_instances(cls) -> List[MockWrapper]:
