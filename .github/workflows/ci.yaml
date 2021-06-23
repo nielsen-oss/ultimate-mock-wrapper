@@ -8,7 +8,7 @@ on:
   pull_request:
 
 jobs:
-  on_pull_request:
+  run_tests:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Python 3.8
