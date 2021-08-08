@@ -42,7 +42,7 @@ jobs:
           python3 -m pip install -r requirements/test.txt
       - name: install self
         run: pwd & python3 -m pip install .
-      - name: Unittests With Pytest
+      - name: run linting tools
         run: |
           isort .
           black .
