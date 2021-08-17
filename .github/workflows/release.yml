@@ -1,0 +1,70 @@
+
+name: Python package
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  run_packaging:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Set up Python 3.7
+          uses: actions/setup-python@v2
+          with:
+            python-version: 3.7.11
+        - uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - name: Install dependencies
+          run: |
+            python3 -m pip install --upgrade pip
+            python3 -m pip install -r requirements/ci.txt
+        - name: install self
+          run: pwd & python3 -m pip install .
+        - name: Get specific changed files
+          id: changed-files-specific
+          uses: tj-actions/changed-files@v6.3
+          with:
+            files: |
+              src
+              docs
+              requirements
+              README.*
+        - name: set previous version
+          id: previous_version
+          run: echo ::set-output name=version::$(cat VERSION)
+        - name: Bump Version
+          run: bump2version patch --verbose
+        - name: set current version
+          id: current_version
+          run: echo ::set-output name=version::$(cat VERSION)
+        - uses: EndBug/add-and-commit@v7
+          if: steps.changed-files-specific.outputs.any_changed == 'true'
+          with:
+            default_author: github_actions
+            add: VERSION setup.cfg
+            message: "Bump version: ${{ steps.previous_version.outputs.version }} → ${{ steps.current_version.outputs.version }}"
+            push: origin main
+        - name: Build a binary wheel and a source tarball
+          if: steps.changed-files-specific.outputs.any_changed == 'true'
+          run: >-
+            python -m
+            build
+            --sdist
+            --wheel
+            --outdir dist/
+            .
+        - name: Publish distribution 📦 to Test PyPI
+          if: steps.changed-files-specific.outputs.any_changed == 'true'
+          uses: pypa/gh-action-pypi-publish@master
+          with:
+            password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+            repository_url: https://test.pypi.org/legacy/
+        - name: Publish distribution 📦 to PyPI
+          if: steps.changed-files-specific.outputs.any_changed == 'true'
+          uses: pypa/gh-action-pypi-publish@master
+          with:
+            password: ${{ secrets.PYPI_API_TOKEN }}
+
