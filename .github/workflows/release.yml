@@ -41,14 +41,14 @@ jobs:
           id: current_version
           run: echo ::set-output name=version::$(cat VERSION)
         - uses: EndBug/add-and-commit@v7
-          if: steps.changed-files-specific.outputs.any_changed == 'false'
+          if: steps.changed-files-specific.outputs.any_changed == 'true'
           with:
             default_author: github_actions
             add: VERSION setup.cfg
             message: "Bump version: ${{ steps.previous_version.outputs.version }} → ${{ steps.current_version.outputs.version }}"
             push: origin main
         - name: Build a binary wheel and a source tarball
-          if: steps.changed-files-specific.outputs.any_changed == 'false'
+          if: steps.changed-files-specific.outputs.any_changed == 'true'
           run: >-
             python -m
             build
@@ -57,13 +57,13 @@ jobs:
             --outdir dist/
             .
         - name: Publish distribution 📦 to Test PyPI
-          if: steps.changed-files-specific.outputs.any_changed == 'false'
+          if: steps.changed-files-specific.outputs.any_changed == 'true'
           uses: pypa/gh-action-pypi-publish@master
           with:
             password: ${{ secrets.TEST_PYPI_API_TOKEN }}
             repository_url: https://test.pypi.org/legacy/
         - name: Publish distribution 📦 to PyPI
-          if: steps.changed-files-specific.outputs.any_changed == 'false'
+          if: steps.changed-files-specific.outputs.any_changed == 'true'
           uses: pypa/gh-action-pypi-publish@master
           with:
             password: ${{ secrets.PYPI_API_TOKEN }}
